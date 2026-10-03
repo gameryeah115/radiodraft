@@ -1,0 +1,1114 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RadioDraft - Fantasy Music League</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            green: '#1DB954',
+                            purple: '#8B5CF6',
+                            dark: '#0F172A',
+                            card: '#1E293B',
+                            accent: '#10B981'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #090D16;
+            color: #F8FAFC;
+        }
+        .glass-panel {
+            background: rgba(30, 41, 59, 0.7);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        .glow-green {
+            box-shadow: 0 0 20px rgba(29, 185, 84, 0.35);
+        }
+        .glow-purple {
+            box-shadow: 0 0 20px rgba(139, 92, 246, 0.35);
+        }
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0F172A;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #334155;
+            border-radius: 3px;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between bg-slate-950 text-slate-100">
+
+    <!-- Notification Toast Container -->
+    <div id="toast-container" class="fixed top-4 right-4 z-50 flex flex-col gap-2 pointer-events-none"></div>
+
+    <!-- ================= AUTH SCREEN ================= -->
+    <section id="screen-auth" class="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-slate-950 via-slate-900 to-indigo-950">
+        <div class="glass-panel w-full max-w-md p-8 rounded-2xl shadow-2xl space-y-6 border border-slate-800">
+            <div class="text-center space-y-2">
+                <div class="w-16 h-16 rounded-2xl bg-gradient-to-tr from-emerald-500 to-violet-600 flex items-center justify-center text-white font-bold text-3xl shadow-lg shadow-emerald-500/20 mx-auto">
+                    <i class="fa-solid fa-radio"></i>
+                </div>
+                <h1 class="text-2xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-emerald-400 to-violet-400">RadioDraft</h1>
+                <p class="text-xs text-slate-400">Human-Only Fantasy Music League</p>
+            </div>
+
+            <div class="flex bg-slate-900 p-1 rounded-xl border border-slate-800 text-xs font-semibold">
+                <button id="auth-tab-login" onclick="switchAuthTab('login')" class="flex-1 py-2 rounded-lg bg-emerald-500 text-slate-950 transition-all font-bold">Log In</button>
+                <button id="auth-tab-signup" onclick="switchAuthTab('signup')" class="flex-1 py-2 rounded-lg text-slate-400 hover:text-slate-200 transition-all">Sign Up Manager</button>
+            </div>
+
+            <form id="form-login" onsubmit="handleLogin(event)" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-300 uppercase mb-1">Email Address</label>
+                    <input type="email" id="login-email" required placeholder="dj@example.com" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-sm text-slate-200 focus:outline-none focus:border-emerald-500 transition-all">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-300 uppercase mb-1">Password</label>
+                    <input type="password" id="login-password" required placeholder="••••••••" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-sm text-slate-200 focus:outline-none focus:border-emerald-500 transition-all">
+                </div>
+                <button type="submit" class="w-full py-3 bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-bold text-sm rounded-xl transition-all shadow-lg glow-green">
+                    Log In as Manager
+                </button>
+            </form>
+
+            <form id="form-signup" onsubmit="handleSignup(event)" class="space-y-4 hidden">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-300 uppercase mb-1">Manager Name</label>
+                    <input id="signup-name" type="text" required placeholder="DJ Skrillex" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-sm text-slate-200 focus:outline-none focus:border-emerald-500 transition-all">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-300 uppercase mb-1">Fantasy Team Name</label>
+                    <input id="signup-team" type="text" required placeholder="BassDrop FC" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-sm text-slate-200 focus:outline-none focus:border-emerald-500 transition-all">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-300 uppercase mb-1">Email Address</label>
+                    <input id="signup-email" type="email" required placeholder="dj@example.com" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-sm text-slate-200 focus:outline-none focus:border-emerald-500 transition-all">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-300 uppercase mb-1">Create Password</label>
+                    <input id="signup-password" type="password" required placeholder="••••••••" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-sm text-slate-200 focus:outline-none focus:border-emerald-500 transition-all">
+                </div>
+                <button type="submit" class="w-full py-3 bg-violet-600 hover:bg-violet-700 text-white font-bold text-sm rounded-xl transition-all shadow-lg glow-purple">
+                    Create Account & Password
+                </button>
+            </form>
+        </div>
+    </section>
+
+    <!-- ================= LEAGUE SETUP SCREEN ================= -->
+    <section id="screen-league-setup" class="min-h-screen flex items-center justify-center p-4 bg-slate-950 hidden">
+        <div class="glass-panel w-full max-w-2xl p-8 rounded-2xl shadow-2xl space-y-6 border border-slate-800">
+            <div class="text-center space-y-1">
+                <h2 class="text-2xl font-extrabold text-white">Create or Join a Human League</h2>
+                <p class="text-xs text-slate-400">Host a room for human managers to join with a code, or enter an existing code</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
+                <!-- Create League -->
+                <div class="bg-slate-900/90 border border-slate-800 p-6 rounded-2xl space-y-4 hover:border-emerald-500/50 transition-all">
+                    <div class="w-10 h-10 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-lg font-bold">
+                        <i class="fa-solid fa-plus"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-base text-white">Create New League</h3>
+                        <p class="text-xs text-slate-400 mt-1">Start a fresh room for up to 8 human players.</p>
+                    </div>
+                    <input id="create-league-name" type="text" value="RadioDraft Pro League 2026" class="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-xs text-slate-200 focus:outline-none">
+                    <button onclick="createNewLeague()" class="w-full py-2.5 bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-bold text-xs rounded-xl transition-all">
+                        Create Room Code
+                    </button>
+                </div>
+
+                <!-- Join League -->
+                <div class="bg-slate-900/90 border border-slate-800 p-6 rounded-2xl space-y-4 hover:border-violet-500/50 transition-all">
+                    <div class="w-10 h-10 rounded-xl bg-violet-500/20 text-violet-400 flex items-center justify-center text-lg font-bold">
+                        <i class="fa-solid fa-key"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-base text-white">Join League with Code</h3>
+                        <p class="text-xs text-slate-400 mt-1">Enter a valid room code created by a commissioner.</p>
+                    </div>
+                    <input id="join-room-code" type="text" placeholder="e.g. RADIO6" value="" class="w-full uppercase font-mono tracking-wider bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-xs text-slate-200 focus:outline-none">
+                    <button onclick="joinLeagueWithCode()" class="w-full py-2.5 bg-violet-600 hover:bg-violet-700 text-white font-bold text-xs rounded-xl transition-all">
+                        Enter Room Code
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ================= MAIN APP CONTAINER ================= -->
+    <div id="screen-main-app" class="hidden flex-col min-h-screen">
+        
+        <!-- Navigation Header -->
+        <header class="sticky top-0 z-40 glass-panel border-b border-slate-800 bg-slate-900/90 backdrop-blur-md">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex items-center justify-between h-16">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-emerald-500 to-violet-600 flex items-center justify-center text-white font-bold text-xl shadow-lg shadow-emerald-500/20">
+                            <i class="fa-solid font-bold fa-radio"></i>
+                        </div>
+                        <div>
+                            <div class="flex items-center space-x-2">
+                                <h1 class="text-lg font-bold bg-clip-text text-transparent bg-gradient-to-r from-emerald-400 to-violet-400">RadioDraft</h1>
+                                <span id="room-code-badge" class="text-xs px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-semibold font-mono">CODE: --</span>
+                            </div>
+                            <p class="text-xs text-slate-400 hidden sm:block">Human-Only Fantasy Live Radio League</p>
+                        </div>
+                    </div>
+
+                    <div class="hidden lg:flex items-center space-x-4 bg-slate-800/60 px-3 py-1.5 rounded-lg border border-slate-700/50 text-xs">
+                        <div class="flex items-center space-x-2 text-slate-300">
+                            <i class="fa-regular fa-clock text-emerald-400"></i>
+                            <span id="est-clock" class="font-mono font-medium">--:--:-- EST</span>
+                        </div>
+                    </div>
+
+                    <!-- Active User Switcher -->
+                    <div class="flex items-center space-x-3">
+                        <div class="text-right">
+                            <div class="text-[10px] text-slate-400 uppercase font-bold">Active Manager</div>
+                            <select id="user-selector" onchange="changeActiveUser(this.value)" class="bg-slate-800 text-xs text-emerald-400 font-semibold rounded-lg px-2.5 py-1 border border-slate-700 focus:outline-none focus:border-emerald-500 cursor-pointer">
+                                <!-- Populated dynamically -->
+                            </select>
+                        </div>
+                        <button onclick="logout()" class="text-xs p-2 text-slate-400 hover:text-white rounded-lg bg-slate-800 border border-slate-700" title="Log Out">
+                            <i class="fa-solid fa-right-from-bracket"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <nav class="flex space-x-1 overflow-x-auto py-2 border-t border-slate-800/80 scrollbar-none text-xs sm:text-sm font-medium">
+                    <button onclick="switchTab('live')" id="tab-btn-live" class="nav-tab flex items-center space-x-2 px-3 sm:px-4 py-2 rounded-lg transition-all text-emerald-400 bg-slate-800/80 border border-emerald-500/30">
+                        <i class="fa-solid fa-microphone-lines text-emerald-400"></i>
+                        <span>Live Listening</span>
+                    </button>
+                    <button onclick="switchTab('leaderboard')" id="tab-btn-leaderboard" class="nav-tab flex items-center space-x-2 px-3 sm:px-4 py-2 rounded-lg transition-all text-slate-400 hover:text-slate-200 hover:bg-slate-800/50">
+                        <i class="fa-solid fa-chart-simple"></i>
+                        <span>Leaderboard & Schedule</span>
+                    </button>
+                    <button onclick="switchTab('waivers')" id="tab-btn-waivers" class="nav-tab flex items-center space-x-2 px-3 sm:px-4 py-2 rounded-lg transition-all text-slate-400 hover:text-slate-200 hover:bg-slate-800/50">
+                        <i class="fa-solid fa-arrows-rotate"></i>
+                        <span>Draft & Free Agents</span>
+                    </button>
+                    <button onclick="switchTab('roster')" id="tab-btn-roster" class="nav-tab flex items-center space-x-2 px-3 sm:px-4 py-2 rounded-lg transition-all text-slate-400 hover:text-slate-200 hover:bg-slate-800/50">
+                        <i class="fa-solid fa-users"></i>
+                        <span>My Roster (<span id="nav-roster-count">0</span>/3)</span>
+                    </button>
+                </nav>
+            </div>
+        </header>
+
+        <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex-grow w-full">
+
+            <!-- PAGE 1: LIVE LISTENING MODE -->
+            <section id="page-live" class="page-content space-y-6">
+                <div id="dj-status-banner" class="rounded-2xl p-4 sm:p-6 border transition-all glass-panel"></div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <div class="lg:col-span-2 space-y-6">
+                        <div class="glass-panel rounded-2xl p-6 border border-slate-800 relative overflow-hidden">
+                            <div class="flex items-center justify-between mb-4">
+                                <div>
+                                    <h2 class="text-xl font-bold flex items-center space-x-2">
+                                        <span>Microphone & Audio Detector</span>
+                                        <span id="listening-status-pill" class="text-xs px-2.5 py-0.5 rounded-full bg-slate-800 text-slate-400 border border-slate-700">Mic Idle</span>
+                                    </h2>
+                                    <p class="text-xs text-slate-400 mt-0.5">Listens via microphone to score points for matching roster artists</p>
+                                </div>
+                                <div class="text-right">
+                                    <span class="text-xs text-slate-400">Current Streak Multiplier</span>
+                                    <div id="streak-multiplier-badge" class="text-lg font-extrabold text-violet-400">1x (Base)</div>
+                                </div>
+                            </div>
+
+                            <div class="relative bg-slate-950 rounded-xl h-44 flex flex-col items-center justify-center border border-slate-800/80 overflow-hidden group">
+                                <canvas id="audio-visualizer" class="w-full h-full absolute inset-0"></canvas>
+
+                                <div id="mic-overlay-idle" class="relative z-10 text-center p-4">
+                                    <div class="w-16 h-16 rounded-full bg-slate-900/90 border border-slate-700 flex items-center justify-center mx-auto mb-3 text-slate-400 text-2xl shadow-inner">
+                                        <i class="fa-solid fa-microphone-slash"></i>
+                                    </div>
+                                    <p id="mic-idle-msg" class="text-sm font-medium text-slate-300">Microphone recognition is offline</p>
+                                    <p class="text-xs text-slate-500 mt-1">Activate listening mode to capture live music audio</p>
+                                </div>
+
+                                <div id="song-detected-overlay" class="hidden absolute inset-0 bg-emerald-950/80 backdrop-blur-sm z-20 flex flex-col items-center justify-center text-center p-4 transition-all">
+                                    <div class="text-emerald-400 text-xs font-bold uppercase tracking-wider mb-1 animate-bounce">✨ Song Identified! ✨</div>
+                                    <div id="detected-song-title" class="text-xl font-extrabold text-white">Blinding Lights</div>
+                                    <div id="detected-artist-name" class="text-sm text-emerald-300 font-semibold mb-2">The Weeknd</div>
+                                    <div id="detected-point-gain" class="text-xs bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 px-3 py-1 rounded-full font-mono font-bold">
+                                        +2 PTS
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="mt-6 flex flex-col sm:flex-row items-center justify-between gap-4">
+                                <button id="toggle-mic-btn" onclick="toggleListeningMode()" class="w-full sm:w-auto px-6 py-3.5 rounded-xl font-bold text-sm flex items-center justify-center space-x-2 transition-all shadow-lg bg-emerald-500 hover:bg-emerald-600 text-slate-950 cursor-pointer glow-green">
+                                    <i class="fa-solid fa-microphone"></i>
+                                    <span id="mic-btn-text">Start Microphone Detector</span>
+                                </button>
+                                <div class="flex items-center space-x-2 text-xs text-slate-400 bg-slate-900/60 px-3 py-2 rounded-lg border border-slate-800 w-full sm:w-auto justify-center">
+                                    <i class="fa-solid fa-bolt text-amber-400"></i>
+                                    <span>Streak Formula: <strong class="text-slate-200">2^(n-1) pts</strong></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Manual Station Logger -->
+                        <div class="glass-panel rounded-2xl p-6 border border-slate-800">
+                            <div class="flex items-center justify-between mb-4">
+                                <div>
+                                    <h3 class="font-bold text-base">Radio Station Quick Logger</h3>
+                                    <p class="text-xs text-slate-400">Instantly test detection for any artist in the database</p>
+                                </div>
+                                <button onclick="triggerRandomRadioPlay()" class="px-3 py-1.5 text-xs font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 rounded-lg hover:bg-emerald-500/20 transition-all">
+                                    <i class="fa-solid fa-shuffle mr-1"></i> Simulate Station Song
+                                </button>
+                            </div>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3" id="quick-play-grid"></div>
+                        </div>
+                    </div>
+
+                    <!-- Side Feed -->
+                    <div class="space-y-6">
+                        <div class="glass-panel rounded-2xl p-5 border border-slate-800">
+                            <h3 class="text-sm font-bold text-slate-300 uppercase tracking-wider mb-3 flex items-center justify-between">
+                                <span>League Combo HUD</span>
+                                <i class="fa-solid fa-fire text-amber-500"></i>
+                            </h3>
+                            <div id="active-streak-display" class="bg-slate-950 p-4 rounded-xl border border-slate-800 text-center">
+                                <div class="text-xs text-slate-400 mb-1">Active League Streak Holder</div>
+                                <div id="streak-owner" class="text-base font-bold text-slate-200">No active streak</div>
+                                <div id="streak-artist" class="text-xs text-emerald-400 font-medium mb-3">--</div>
+                                <div class="flex justify-center items-center space-x-2">
+                                    <span class="text-xs text-slate-500">Consecutive Plays:</span>
+                                    <span id="streak-count" class="text-lg font-extrabold text-violet-400 font-mono">0</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="glass-panel rounded-2xl p-5 border border-slate-800">
+                            <h3 class="text-sm font-bold text-slate-300 uppercase tracking-wider mb-3 flex items-center justify-between">
+                                <span>Recent Radio Plays</span>
+                                <span class="text-xs text-slate-500 font-normal">Today</span>
+                            </h3>
+                            <div id="song-history-feed" class="space-y-2.5 max-h-[320px] overflow-y-auto pr-1"></div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- PAGE 2: LEADERBOARD & SCHEDULE -->
+            <section id="page-leaderboard" class="page-content hidden space-y-6">
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                    <div>
+                        <h2 class="text-2xl font-extrabold text-white">League Standings & DJ Schedule</h2>
+                        <p class="text-xs text-slate-400 mt-1">Track scores and human manager DJ rotations</p>
+                    </div>
+                </div>
+
+                <div class="glass-panel rounded-2xl border border-slate-800 overflow-hidden">
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-xs sm:text-sm">
+                            <thead class="bg-slate-900/80 text-slate-400 uppercase tracking-wider text-[11px] border-b border-slate-800">
+                                <tr>
+                                    <th class="py-3.5 px-4 text-center">Rank</th>
+                                    <th class="py-3.5 px-4">Manager & Team</th>
+                                    <th class="py-3.5 px-4">Roster Artists</th>
+                                    <th class="py-3.5 px-4 text-center">DJ Days</th>
+                                    <th class="py-3.5 px-4 text-right">Total Points</th>
+                                </tr>
+                            </thead>
+                            <tbody id="standings-table-body" class="divide-y divide-slate-800/60"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="glass-panel rounded-2xl p-6 border border-slate-800">
+                    <h3 class="text-base font-bold text-white mb-4">Human DJ Rotation Schedule</h3>
+                    <div id="dj-calendar-grid" class="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-7 gap-2"></div>
+                </div>
+            </section>
+
+            <!-- PAGE 3: WAIVERS & TRADES -->
+            <section id="page-waivers" class="page-content hidden space-y-6">
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                    <div>
+                        <h2 class="text-2xl font-extrabold text-white">Waiver Wire & Human Trades</h2>
+                        <p class="text-xs text-slate-400 mt-1">Claim unowned free agents or propose trades directly to other real managers</p>
+                    </div>
+                </div>
+
+                <!-- Trade Builder -->
+                <div class="glass-panel rounded-2xl p-6 border border-slate-800 space-y-4">
+                    <h3 class="text-base font-bold text-white flex items-center space-x-2">
+                        <i class="fa-solid fa-handshake text-emerald-400"></i>
+                        <span>Propose Trade to Human Manager</span>
+                    </h3>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 bg-slate-950 p-4 rounded-xl border border-slate-800">
+                        <div>
+                            <label class="text-xs font-semibold text-slate-400 uppercase block mb-1">Target Manager</label>
+                            <select id="trade-target-user" onchange="updateTradeDropdowns()" class="w-full bg-slate-900 border border-slate-700 text-xs rounded-lg p-2 text-slate-200"></select>
+                        </div>
+                        <div>
+                            <label class="text-xs font-semibold text-slate-400 uppercase block mb-1">You Offer</label>
+                            <select id="trade-give-artist" class="w-full bg-slate-900 border border-slate-700 text-xs rounded-lg p-2 text-slate-200"></select>
+                        </div>
+                        <div>
+                            <label class="text-xs font-semibold text-slate-400 uppercase block mb-1">You Request</label>
+                            <select id="trade-get-artist" class="w-full bg-slate-900 border border-slate-700 text-xs rounded-lg p-2 text-slate-200"></select>
+                        </div>
+                    </div>
+                    <button onclick="proposeTrade()" class="w-full py-2.5 bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-bold text-xs rounded-xl">
+                        Send Trade Proposal
+                    </button>
+                </div>
+
+                <div class="glass-panel rounded-2xl p-6 border border-slate-800 space-y-4">
+                    <h3 class="text-base font-bold text-white">Available Free Agent Artists</h3>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4" id="waiver-prospects-grid"></div>
+                </div>
+            </section>
+
+            <!-- PAGE 4: MY ROSTER -->
+            <section id="page-roster" class="page-content hidden space-y-6">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h2 class="text-2xl font-extrabold text-white">Active Roster & Player Management</h2>
+                        <p class="text-xs text-slate-400 mt-1">Manage your 3 drafted artists</p>
+                    </div>
+                </div>
+                <div id="roster-grid" class="grid grid-cols-1 md:grid-cols-3 gap-6"></div>
+            </section>
+        </main>
+    </div>
+
+    <script>
+        // MASTER DATABASE OF ARTISTS
+        const ARTIST_DATABASE = [
+            { id: 1, name: "The Weeknd", track: "Blinding Lights", genre: "Pop" },
+            { id: 2, name: "Drake", track: "God's Plan", genre: "Hip-Hop" },
+            { id: 3, name: "Dua Lipa", track: "Levitating", genre: "Pop" },
+            { id: 4, name: "Taylor Swift", track: "Anti-Hero", genre: "Pop" },
+            { id: 5, name: "Kendrick Lamar", track: "HUMBLE.", genre: "Hip-Hop" },
+            { id: 6, name: "Post Malone", track: "Circles", genre: "Pop/Rap" },
+            { id: 7, name: "Eminem", track: "Lose Yourself", genre: "Hip-Hop" },
+            { id: 8, name: "Billie Eilish", track: "Bad Guy", genre: "Alternative" },
+            { id: 9, name: "Harry Styles", track: "As It Was", genre: "Pop" },
+            { id: 10, name: "Olivia Rodrigo", track: "Good 4 U", genre: "Pop/Rock" },
+            { id: 11, name: "Ed Sheeran", track: "Shape of You", genre: "Pop" },
+            { id: 12, name: "Bad Bunny", track: "Titi Me Pregunto", genre: "Latin" },
+            { id: 13, name: "SZA", track: "Kill Bill", genre: "R&B" },
+            { id: 14, name: "Bruno Mars", track: "Uptown Funk", genre: "Pop/Funk" },
+            { id: 15, name: "Rihanna", track: "Umbrella", genre: "Pop/R&B" },
+            { id: 16, name: "Beyonce", track: "CUFF IT", genre: "R&B" },
+            { id: 17, name: "Coldplay", track: "Yellow", genre: "Rock" },
+            { id: 18, name: "Imagine Dragons", track: "Radioactive", genre: "Rock" },
+            { id: 19, name: "Travis Scott", track: "Sicko Mode", genre: "Hip-Hop" },
+            { id: 20, name: "Doja Cat", track: "Paint The Town Red", genre: "Pop/Rap" },
+            { id: 21, name: "Kanye West", track: "Stronger", genre: "Hip-Hop" },
+            { id: 22, name: "Justin Bieber", track: "Peaches", genre: "Pop" },
+            { id: 23, name: "Ariana Grande", track: "7 Rings", genre: "Pop" },
+            { id: 24, name: "Calvin Harris", track: "One Kiss", genre: "Dance" }
+        ];
+
+        // STATE APP
+        let registeredUsers = [];
+        let activeLeagues = []; // No default pre-seeded rooms so codes must be real or newly created
+        let currentLeague = null;
+
+        let activeUserId = null;
+        let isListening = false;
+        let activeStreak = { ownerId: null, count: 0, artistId: null };
+        let historyFeed = [];
+        let audioCtx = null;
+        let analyser = null;
+        let micStream = null;
+        let visualizerId = null;
+        let detectionInterval = null;
+
+        window.addEventListener('DOMContentLoaded', () => {
+            startClock();
+            setupVisualizerCanvas();
+        });
+
+        function startClock() {
+            setInterval(() => {
+                const now = new Date();
+                const clockElem = document.getElementById('est-clock');
+                if (clockElem) clockElem.innerText = now.toLocaleTimeString() + ' EST';
+            }, 1000);
+        }
+
+        function switchAuthTab(tab) {
+            const loginForm = document.getElementById('form-login');
+            const signupForm = document.getElementById('form-signup');
+            const loginTab = document.getElementById('auth-tab-login');
+            const signupTab = document.getElementById('auth-tab-signup');
+
+            if (tab === 'login') {
+                loginForm.classList.remove('hidden');
+                signupForm.classList.add('hidden');
+                loginTab.className = "flex-1 py-2 rounded-lg bg-emerald-500 text-slate-950 transition-all font-bold";
+                signupTab.className = "flex-1 py-2 rounded-lg text-slate-400 hover:text-slate-200 transition-all";
+            } else {
+                loginForm.classList.add('hidden');
+                signupForm.classList.remove('hidden');
+                signupTab.className = "flex-1 py-2 rounded-lg bg-violet-600 text-white transition-all font-bold";
+                loginTab.className = "flex-1 py-2 rounded-lg text-slate-400 hover:text-slate-200 transition-all";
+            }
+        }
+
+        function handleLogin(e) {
+            e.preventDefault();
+            const email = document.getElementById('login-email').value.trim().toLowerCase();
+            const password = document.getElementById('login-password').value;
+
+            const user = registeredUsers.find(u => u.email.toLowerCase() === email && u.password === password);
+            if (!user) {
+                showToast("Invalid email or password. Please check your credentials or sign up.", "error");
+                return;
+            }
+
+            activeUserId = user.id;
+            showScreen('screen-league-setup');
+            showToast(`Welcome back, ${user.name}!`);
+        }
+
+        function handleSignup(e) {
+            e.preventDefault();
+            const name = document.getElementById('signup-name').value.trim();
+            const team = document.getElementById('signup-team').value.trim();
+            const email = document.getElementById('signup-email').value.trim().toLowerCase();
+            const password = document.getElementById('signup-password').value;
+
+            if (registeredUsers.some(u => u.email.toLowerCase() === email)) {
+                showToast("Email already registered. Please log in.", "error");
+                switchAuthTab('login');
+                document.getElementById('login-email').value = email;
+                return;
+            }
+
+            const newId = "p" + (registeredUsers.length + 1);
+            const newPlayer = { id: newId, name, team, email, password, roster: [], points: 0, djDays: 0 };
+            
+            registeredUsers.push(newPlayer);
+            activeUserId = newId;
+
+            showToast(`Account created successfully for ${name}!`);
+            showScreen('screen-league-setup');
+        }
+
+        function createNewLeague() {
+            const nameInput = document.getElementById('create-league-name').value.trim();
+            const newCode = "ROOM" + Math.floor(1000 + Math.random() * 9000);
+            
+            const newLeague = {
+                code: newCode,
+                name: nameInput || "RadioDraft Pro League 2026",
+                players: []
+            };
+
+            const activeUser = registeredUsers.find(u => u.id === activeUserId);
+            if (activeUser) {
+                newLeague.players.push(activeUser);
+            }
+
+            activeLeagues.push(newLeague);
+            currentLeague = newLeague;
+
+            showToast(`Created League Room Code: ${currentLeague.code}`);
+            enterMainApp();
+        }
+
+        function joinLeagueWithCode() {
+            const rawInput = document.getElementById('join-room-code').value;
+            const codeInput = rawInput ? rawInput.trim().toUpperCase() : '';
+
+            console.log("Checking join code:", codeInput);
+            console.log("Available leagues:", activeLeagues);
+
+            if (!codeInput) {
+                showToast("Please enter a room code.", "error");
+                return;
+            }
+
+            // Strictly find existing league by code match
+            const foundLeague = activeLeagues.find(l => l.code.toUpperCase() === codeInput);
+            
+            // Explicitly block and return if the room code does not exist
+            if (!foundLeague) {
+                showToast(`Room code "${codeInput}" does not exist. Please check or create a league first.`, "error");
+                return;
+            }
+
+            currentLeague = foundLeague;
+            
+            const activeUser = registeredUsers.find(u => u.id === activeUserId);
+            if (activeUser && !currentLeague.players.some(p => p.id === activeUser.id)) {
+                if (currentLeague.players.length >= 8) {
+                    showToast("League capacity reached (8 max players).", "error");
+                    return;
+                }
+                currentLeague.players.push(activeUser);
+            }
+
+            showToast(`Successfully joined League Room ${currentLeague.code}`);
+            enterMainApp();
+        }
+
+        function enterMainApp() {
+            if (!currentLeague) return;
+            document.getElementById('room-code-badge').innerText = "CODE: " + currentLeague.code;
+            showScreen('screen-main-app');
+            renderAll();
+        }
+
+        function showScreen(screenId) {
+            ['screen-auth', 'screen-league-setup', 'screen-main-app'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.classList.add('hidden');
+            });
+            const target = document.getElementById(screenId);
+            if (target) {
+                target.classList.remove('hidden');
+                if (screenId === 'screen-main-app') target.classList.add('flex');
+            }
+        }
+
+        function logout() {
+            stopListeningMode();
+            showScreen('screen-auth');
+        }
+
+        function changeActiveUser(userId) {
+            activeUserId = userId;
+            renderAll();
+            showToast(`Switched active local manager to: ${getActiveUser().name}`);
+        }
+
+        function getActiveUser() {
+            if (!currentLeague || currentLeague.players.length === 0) {
+                return registeredUsers.find(u => u.id === activeUserId) || { id: 'p1', name: 'Manager', team: 'Squad', roster: [], points: 0 };
+            }
+            return currentLeague.players.find(p => p.id === activeUserId) || currentLeague.players[0];
+        }
+
+        function switchTab(tabKey) {
+            document.querySelectorAll('.nav-tab').forEach(btn => {
+                btn.className = "nav-tab flex items-center space-x-2 px-3 sm:px-4 py-2 rounded-lg transition-all text-slate-400 hover:text-slate-200 hover:bg-slate-800/50";
+            });
+            document.querySelectorAll('.page-content').forEach(pg => pg.classList.add('hidden'));
+
+            const activeBtn = document.getElementById(`tab-btn-${tabKey}`);
+            const activePg = document.getElementById(`page-${tabKey}`);
+
+            if (activeBtn) activeBtn.className = "nav-tab flex items-center space-x-2 px-3 sm:px-4 py-2 rounded-lg transition-all text-emerald-400 bg-slate-800/80 border border-emerald-500/30";
+            if (activePg) activePg.classList.remove('hidden');
+        }
+
+        function renderAll() {
+            renderUserSelector();
+            renderDJBanner();
+            renderQuickPlayGrid();
+            renderStandings();
+            renderCalendar();
+            renderWaivers();
+            renderRoster();
+            updateNavRosterCount();
+        }
+
+        function renderUserSelector() {
+            const sel = document.getElementById('user-selector');
+            if (!sel || !currentLeague) return;
+            sel.innerHTML = currentLeague.players.map(p => `
+                <option value="${p.id}" ${p.id === activeUserId ? 'selected' : ''}>
+                    ${p.name} (${p.team})
+                </option>
+            `).join('');
+        }
+
+        function renderDJBanner() {
+            const activeUser = getActiveUser();
+            const container = document.getElementById('dj-status-banner');
+            if (!container || !currentLeague) return;
+
+            container.className = "rounded-2xl p-4 sm:p-6 border transition-all glass-panel bg-slate-900/80 border-slate-800";
+            container.innerHTML = `
+                <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                    <div class="flex items-center space-x-4">
+                        <div class="w-12 h-12 rounded-xl bg-emerald-500/20 text-emerald-400 font-bold flex items-center justify-center text-xl border border-emerald-500/30">
+                            <i class="fa-solid fa-microphone-lines"></i>
+                        </div>
+                        <div>
+                            <div class="text-xs text-slate-400 font-bold uppercase tracking-wider">Active Human League Room (${currentLeague.name})</div>
+                            <h2 class="text-lg font-bold text-white">${activeUser.name} <span class="text-xs font-normal text-slate-400">(${activeUser.team})</span></h2>
+                            <p class="text-xs text-slate-400">Microphone detection is ready to listen to audio or simulated radio streams.</p>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function setupVisualizerCanvas() {
+            const canvas = document.getElementById('audio-visualizer');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            canvas.width = canvas.parentElement.clientWidth;
+            canvas.height = canvas.parentElement.clientHeight;
+
+            function drawIdleBars() {
+                if (isListening) return;
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                ctx.fillStyle = 'rgba(30, 41, 59, 0.4)';
+                const barWidth = 4;
+                const gap = 6;
+                const bars = Math.floor(canvas.width / (barWidth + gap));
+                for (let i = 0; i < bars; i++) {
+                    const h = Math.sin(Date.now() * 0.003 + i * 0.2) * 15 + 20;
+                    ctx.fillRect(i * (barWidth + gap), canvas.height / 2 - h / 2, barWidth, h);
+                }
+                visualizerId = requestAnimationFrame(drawIdleBars);
+            }
+            drawIdleBars();
+        }
+
+        async function toggleListeningMode() {
+            if (!isListening) {
+                try {
+                    micStream = await navigator.mediaDevices.getUserMedia({ audio: true, video: false });
+                    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                    const source = audioCtx.createMediaStreamSource(micStream);
+                    analyser = audioCtx.createAnalyser();
+                    analyser.fftSize = 256;
+                    source.connect(analyser);
+
+                    isListening = true;
+                    updateMicUIState(true);
+                    startAudioAnalysisLoop();
+                    showToast("Microphone listening active!");
+                } catch (err) {
+                    isListening = true;
+                    updateMicUIState(true);
+                    startSimulationLoop();
+                    showToast("Mic simulated mode active (no hardware mic required)!");
+                }
+            } else {
+                stopListeningMode();
+                showToast("Microphone listening stopped.");
+            }
+        }
+
+        function stopListeningMode() {
+            isListening = false;
+            if (micStream) {
+                micStream.getTracks().forEach(track => track.stop());
+                micStream = null;
+            }
+            if (audioCtx && audioCtx.state !== 'closed') {
+                audioCtx.close();
+                audioCtx = null;
+            }
+            if (visualizerId) cancelAnimationFrame(visualizerId);
+            if (detectionInterval) clearInterval(detectionInterval);
+            updateMicUIState(false);
+            setupVisualizerCanvas();
+        }
+
+        function updateMicUIState(active) {
+            const statusPill = document.getElementById('listening-status-pill');
+            const idleOverlay = document.getElementById('mic-overlay-idle');
+            const toggleBtn = document.getElementById('toggle-mic-btn');
+            const micText = document.getElementById('mic-btn-text');
+
+            if (active) {
+                if (statusPill) {
+                    statusPill.className = "text-xs px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 animate-pulse";
+                    statusPill.innerText = "Listening Live...";
+                }
+                if (idleOverlay) idleOverlay.classList.add('hidden');
+                if (toggleBtn) toggleBtn.className = "w-full sm:w-auto px-6 py-3.5 rounded-xl font-bold text-sm flex items-center justify-center space-x-2 transition-all shadow-lg bg-red-600 hover:bg-red-700 text-white cursor-pointer";
+                if (micText) micText.innerText = "Stop Microphone Detector";
+            } else {
+                if (statusPill) {
+                    statusPill.className = "text-xs px-2.5 py-0.5 rounded-full bg-slate-800 text-slate-400 border border-slate-700";
+                    statusPill.innerText = "Mic Idle";
+                }
+                if (idleOverlay) idleOverlay.classList.remove('hidden');
+                if (toggleBtn) toggleBtn.className = "w-full sm:w-auto px-6 py-3.5 rounded-xl font-bold text-sm flex items-center justify-center space-x-2 transition-all shadow-lg bg-emerald-500 hover:bg-emerald-600 text-slate-950 cursor-pointer glow-green";
+                if (micText) micText.innerText = "Start Microphone Detector";
+            }
+        }
+
+        function startAudioAnalysisLoop() {
+            const canvas = document.getElementById('audio-visualizer');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            const bufferLength = analyser.frequencyBinCount;
+            const dataArray = new Uint8Array(bufferLength);
+            let lastMatchTime = Date.now();
+
+            function renderFrame() {
+                if (!isListening) return;
+                visualizerId = requestAnimationFrame(renderFrame);
+                analyser.getByteFrequencyData(dataArray);
+
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                const barWidth = (canvas.width / bufferLength) * 2.5;
+                let x = 0;
+                let sum = 0;
+
+                for (let i = 0; i < bufferLength; i++) {
+                    const barHeight = dataArray[i] / 2;
+                    sum += dataArray[i];
+                    ctx.fillStyle = `rgb(${barHeight + 100}, 185, 84)`;
+                    ctx.fillRect(x, canvas.height - barHeight, barWidth, barHeight);
+                    x += barWidth + 1;
+                }
+
+                if ((sum / bufferLength) > 25 && Date.now() - lastMatchTime > 12000) {
+                    lastMatchTime = Date.now();
+                    triggerRandomRadioPlay();
+                }
+            }
+            renderFrame();
+        }
+
+        function startSimulationLoop() {
+            const canvas = document.getElementById('audio-visualizer');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+
+            function renderSimFrame() {
+                if (!isListening) return;
+                visualizerId = requestAnimationFrame(renderSimFrame);
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                const barWidth = 4;
+                const gap = 6;
+                const bars = Math.floor(canvas.width / (barWidth + gap));
+                for (let i = 0; i < bars; i++) {
+                    const h = Math.random() * 60 + 10;
+                    ctx.fillStyle = '#1DB954';
+                    ctx.fillRect(i * (barWidth + gap), canvas.height / 2 - h / 2, barWidth, h);
+                }
+            }
+            renderSimFrame();
+
+            detectionInterval = setInterval(() => {
+                if (isListening) triggerRandomRadioPlay();
+            }, 10000);
+        }
+
+        function renderQuickPlayGrid() {
+            const grid = document.getElementById('quick-play-grid');
+            if (!grid) return;
+            grid.innerHTML = ARTIST_DATABASE.slice(0, 6).map(a => `
+                <button onclick="logTrackPlay(${a.id})" class="p-3 bg-slate-900 hover:bg-slate-800 border border-slate-800 rounded-xl text-left transition-all">
+                    <div class="text-xs font-bold text-white">${a.track}</div>
+                    <div class="text-[11px] text-emerald-400">${a.name}</div>
+                </button>
+            `).join('');
+        }
+
+        function logTrackPlay(artistId) {
+            const artist = ARTIST_DATABASE.find(a => a.id === artistId);
+            if (!artist || !currentLeague) return;
+
+            const owner = currentLeague.players.find(p => p.roster.includes(artist.id));
+            let ptsAwarded = 0;
+
+            if (owner) {
+                if (activeStreak.ownerId === owner.id && activeStreak.artistId === artist.id) {
+                    activeStreak.count++;
+                } else {
+                    activeStreak = { ownerId: owner.id, count: 1, artistId: artist.id };
+                }
+                ptsAwarded = 2 * Math.pow(2, activeStreak.count - 1);
+                owner.points += ptsAwarded;
+            } else {
+                activeStreak = { ownerId: null, count: 0, artistId: null };
+            }
+
+            const titleEl = document.getElementById('detected-song-title');
+            const artistEl = document.getElementById('detected-artist-name');
+            const gainEl = document.getElementById('detected-point-gain');
+
+            if (titleEl) titleEl.innerText = artist.track;
+            if (artistEl) artistEl.innerText = artist.name;
+            if (gainEl) {
+                gainEl.innerText = owner ? `+${ptsAwarded} PTS (${owner.name} scored!)` : `Unowned Artist (0 PTS)`;
+            }
+
+            const overlay = document.getElementById('song-detected-overlay');
+            if (overlay) {
+                overlay.classList.remove('hidden');
+                setTimeout(() => overlay.classList.add('hidden'), 2500);
+            }
+
+            historyFeed.unshift({
+                time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+                artist: artist.name,
+                track: artist.track,
+                ownerName: owner ? owner.name : "Free Agent"
+            });
+
+            renderStreakHUD();
+            renderHistoryFeed();
+            renderStandings();
+        }
+
+        function triggerRandomRadioPlay() {
+            const randArtist = ARTIST_DATABASE[Math.floor(Math.random() * ARTIST_DATABASE.length)];
+            logTrackPlay(randArtist.id);
+        }
+
+        function renderStreakHUD() {
+            const ownerElem = document.getElementById('streak-owner');
+            const artistElem = document.getElementById('streak-artist');
+            const countElem = document.getElementById('streak-count');
+            const multElem = document.getElementById('streak-multiplier-badge');
+
+            if (!ownerElem || !currentLeague) return;
+
+            if (activeStreak.ownerId) {
+                const owner = currentLeague.players.find(p => p.id === activeStreak.ownerId);
+                const artist = ARTIST_DATABASE.find(a => a.id === activeStreak.artistId);
+                ownerElem.innerText = owner ? owner.name : "Unknown";
+                artistElem.innerText = artist ? artist.name : "--";
+                countElem.innerText = activeStreak.count;
+                multElem.innerText = `${Math.pow(2, activeStreak.count - 1)}x Multiplier`;
+            } else {
+                ownerElem.innerText = "No active streak";
+                artistElem.innerText = "--";
+                countElem.innerText = "0";
+                multElem.innerText = "1x (Base)";
+            }
+        }
+
+        function renderHistoryFeed() {
+            const feed = document.getElementById('song-history-feed');
+            if (!feed) return;
+            feed.innerHTML = historyFeed.map(item => `
+                <div class="p-2.5 bg-slate-950 border border-slate-800 rounded-xl flex items-center justify-between text-xs">
+                    <div>
+                        <div class="font-bold text-white">${item.track}</div>
+                        <div class="text-[11px] text-emerald-400">${item.artist}</div>
+                    </div>
+                    <div class="text-right text-[10px] text-slate-500">
+                        <div>${item.time}</div>
+                        <div class="text-slate-400 font-semibold">${item.ownerName}</div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function renderStandings() {
+            const tbody = document.getElementById('standings-table-body');
+            if (!tbody || !currentLeague) return;
+            const sorted = [...currentLeague.players].sort((a, b) => b.points - a.points);
+
+            if (sorted.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="5" class="py-4 text-center text-slate-500">No human managers in league yet.</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = sorted.map((p, idx) => {
+                const rosterNames = p.roster.map(id => {
+                    const art = ARTIST_DATABASE.find(a => a.id === id);
+                    return art ? art.name : "Empty";
+                }).join(', ');
+
+                return `
+                    <tr class="${p.id === activeUserId ? 'bg-emerald-500/10 border-l-2 border-emerald-500' : 'hover:bg-slate-900/50'}">
+                        <td class="py-3 px-4 text-center font-bold text-slate-400">${idx + 1}</td>
+                        <td class="py-3 px-4">
+                            <div class="font-bold text-white">${p.name}</div>
+                            <div class="text-[11px] text-slate-400">${p.team}</div>
+                        </td>
+                        <td class="py-3 px-4 text-xs text-slate-300">${rosterNames || '<span class="italic text-slate-500">No Artists Drafted</span>'}</td>
+                        <td class="py-3 px-4 text-center text-slate-300">${p.djDays}</td>
+                        <td class="py-3 px-4 text-right font-mono font-bold text-emerald-400">${p.points} PTS</td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        function renderCalendar() {
+            const grid = document.getElementById('dj-calendar-grid');
+            if (!grid || !currentLeague) return;
+            let html = '';
+            for (let day = 1; day <= 28; day++) {
+                const dj = currentLeague.players.length > 0 ? currentLeague.players[day % currentLeague.players.length] : null;
+                html += `
+                    <div class="bg-slate-900 border border-slate-800 p-2 rounded-xl text-center">
+                        <div class="text-[10px] text-slate-500 font-mono font-semibold">OCT ${day}</div>
+                        <div class="text-xs font-bold text-emerald-400 truncate mt-1">${dj ? dj.name : 'Open Spot'}</div>
+                    </div>
+                `;
+            }
+            grid.innerHTML = html;
+        }
+
+        function renderWaivers() {
+            const grid = document.getElementById('waiver-prospects-grid');
+            if (!grid || !currentLeague) return;
+            const ownedIds = currentLeague.players.flatMap(p => p.roster);
+            const freeAgents = ARTIST_DATABASE.filter(a => !ownedIds.includes(a.id));
+
+            grid.innerHTML = freeAgents.map(a => `
+                <div class="bg-slate-900 border border-slate-800 p-4 rounded-xl flex items-center justify-between">
+                    <div>
+                        <div class="font-bold text-sm text-white">${a.name}</div>
+                        <div class="text-xs text-slate-400">${a.track} • <span class="text-emerald-400">${a.genre}</span></div>
+                    </div>
+                    <button onclick="claimArtist(${a.id})" class="px-3 py-1.5 bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-bold text-xs rounded-lg transition-all">
+                        Claim / Draft
+                    </button>
+                </div>
+            `).join('');
+            updateTradeDropdowns();
+        }
+
+        function updateTradeDropdowns() {
+            const targetSel = document.getElementById('trade-target-user');
+            const giveSel = document.getElementById('trade-give-artist');
+            const getSel = document.getElementById('trade-get-artist');
+            if (!targetSel || !currentLeague) return;
+
+            const otherPlayers = currentLeague.players.filter(p => p.id !== activeUserId);
+            if (otherPlayers.length === 0) {
+                targetSel.innerHTML = `<option value="">No other human players yet</option>`;
+                if (giveSel) giveSel.innerHTML = ``;
+                if (getSel) getSel.innerHTML = ``;
+                return;
+            }
+
+            targetSel.innerHTML = otherPlayers.map(p => `<option value="${p.id}">${p.name} (${p.team})</option>`).join('');
+            const activeUser = getActiveUser();
+            if (giveSel) {
+                giveSel.innerHTML = activeUser.roster.map(id => {
+                    const art = ARTIST_DATABASE.find(a => a.id === id);
+                    return `<option value="${art.id}">${art.name}</option>`;
+                }).join('');
+            }
+
+            const targetUser = currentLeague.players.find(p => p.id === targetSel.value) || otherPlayers[0];
+            if (getSel) {
+                getSel.innerHTML = targetUser ? targetUser.roster.map(id => {
+                    const art = ARTIST_DATABASE.find(a => a.id === id);
+                    return `<option value="${art.id}">${art.name}</option>`;
+                }).join('') : '';
+            }
+        }
+
+        function proposeTrade() {
+            const targetId = document.getElementById('trade-target-user').value;
+            const giveId = parseInt(document.getElementById('trade-give-artist').value);
+            const getId = parseInt(document.getElementById('trade-get-artist').value);
+
+            if (!targetId) return showToast("No target manager available.", "error");
+            const activeUser = getActiveUser();
+            const targetUser = currentLeague.players.find(p => p.id === targetId);
+
+            if (!giveId || !getId) return showToast("Select valid trade artists.", "error");
+
+            activeUser.roster = activeUser.roster.filter(id => id !== giveId);
+            activeUser.roster.push(getId);
+            targetUser.roster = targetUser.roster.filter(id => id !== getId);
+            targetUser.roster.push(giveId);
+
+            showToast("Trade Executed!");
+            renderAll();
+        }
+
+        function claimArtist(artistId) {
+            const user = getActiveUser();
+            if (user.roster.length >= 3) {
+                showToast("Roster full (3 artists max).", "error");
+                return;
+            }
+            user.roster.push(artistId);
+            showToast("Artist added to your roster!");
+            renderAll();
+        }
+
+        function dropArtist(artistId) {
+            const user = getActiveUser();
+            user.roster = user.roster.filter(id => id !== artistId);
+            showToast("Artist dropped.");
+            renderAll();
+        }
+
+        function renderRoster() {
+            const grid = document.getElementById('roster-grid');
+            if (!grid) return;
+            const user = getActiveUser();
+
+            if (user.roster.length === 0) {
+                grid.innerHTML = `
+                    <div class="col-span-3 glass-panel border border-slate-800 p-8 rounded-2xl text-center space-y-2">
+                        <p class="text-slate-300 font-bold">Your roster is empty!</p>
+                    </div>
+                `;
+                return;
+            }
+
+            grid.innerHTML = user.roster.map(id => {
+                const art = ARTIST_DATABASE.find(a => a.id === id);
+                return `
+                    <div class="glass-panel border border-slate-800 p-5 rounded-2xl space-y-3">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <h3 class="font-extrabold text-base text-white">${art.name}</h3>
+                                <p class="text-xs text-slate-400">${art.track}</p>
+                            </div>
+                        </div>
+                        <button onclick="dropArtist(${art.id})" class="w-full py-2 bg-red-500/20 text-red-400 text-xs font-bold rounded-xl border border-red-500/30">
+                            Drop Artist
+                        </button>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function updateNavRosterCount() {
+            const countElem = document.getElementById('nav-roster-count');
+            if (countElem) countElem.innerText = getActiveUser().roster.length;
+        }
+
+        function showToast(msg, type = "info") {
+            const container = document.getElementById('toast-container');
+            if (!container) return;
+            const toast = document.createElement('div');
+            toast.className = `px-4 py-3 rounded-xl text-xs font-bold text-white shadow-xl border backdrop-blur-md transition-all ${
+                type === 'error' ? 'bg-red-900/90 border-red-700' : 'bg-emerald-900/90 border-emerald-700'
+            }`;
+            toast.innerText = msg;
+            container.appendChild(toast);
+            setTimeout(() => toast.remove(), 3000);
+        }
+    </script>
+</body>
+</html>
